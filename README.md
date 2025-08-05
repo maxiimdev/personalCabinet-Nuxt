@@ -1,76 +1,71 @@
-# Nuxt Minimal Starter
+# Personal Cabinet
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A full-stack Nuxt 3 application implementing a personal cabinet with user authentication and profile management.
 
-## Setup
+## Overview
 
-Make sure to install dependencies:
+This project is a minimal full-stack application built with Nuxt 3 to demonstrate user authentication and profile management. It allows users to register, log in, view/edit their profile (name, email, password), and log out. The backend logic is handled within Nuxt's server routes, eliminating the need for a separate backend server.
 
-```bash
-# npm
-npm install
+## Features
 
-# pnpm
-pnpm install
+* Registration: Create a new user account with email, password, and name.
 
-# yarn
-yarn install
+* Login/Logout: Authenticate users and issue a JWT token; logout clears the session.
 
-# bun
-bun install
-```
+* Profile Management: View and update user profile details (name, email, password).
 
-## Development Server
+* Protected Routes: The /profile page is accessible only to authenticated users.
 
-Start the development server on `http://localhost:3000`:
+* Secure API: Server-side API endpoints are protected with JWT authentication.
 
-```bash
-# npm
-npm run dev
+## Technologies Used
 
-# pnpm
-pnpm dev
+Frontend: Nuxt 3, Vue 3 (Composition API), Pinia, TypeScript
 
-# yarn
-yarn dev
+Backend: Nuxt 3 Server Routes, MongoDB, Mongoose, JSON Web Tokens (JWT), bcryptjs
 
-# bun
-bun run dev
-```
+## How It Works
 
-## Production
+Authentication:
 
-Build the application for production:
+* Users register via /register with email, password, and name. The password is hashed using bcryptjs and stored in MongoDB.
 
-```bash
-# npm
-npm run build
+* Login at /login verifies credentials and issues a JWT, stored in localStorage via Pinia.
 
-# pnpm
-pnpm build
+* Logout clears the Pinia store and redirects to /login.
 
-# yarn
-yarn build
+Profile Management:
 
-# bun
-bun run build
-```
+* The /profile page displays the user's name and email, allowing updates (including optional password changes).
 
-Locally preview production build:
+* Updates are sent to the /api/profile endpoint, which validates the JWT and updates the MongoDB document.
 
-```bash
-# npm
-npm run preview
+Security:
 
-# pnpm
-pnpm preview
+* Client-side: The middleware/auth.ts ensures only authenticated users (with a valid token in Pinia) can access /profile.
 
-# yarn
-yarn preview
+* Server-side: The server/middleware/auth.ts validates JWT for API requests to /api/profile.
 
-# bun
-bun run preview
-```
+* MongoDB stores user data securely, with passwords hashed.
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
-# personalCabinet-Nuxt
+State Management:
+
+* Pinia store (stores/user.ts) uses Composition API to manage user (profile data) and token.
+
+* State is persisted in localStorage to maintain sessions across page reloads.
+
+## API Endpoints
+
+POST /api/auth/register: Register a new user.
+
+* Body: { "email": "string", "password": "string", "name": "string" }
+
+POST /api/auth/login: Authenticate and receive a JWT.
+
+* Body: { "email": "string", "password": "string" }
+
+GET /api/profile: Get user profile (requires JWT in Authorization: Bearer <token>).
+
+PUT /api/profile: Update user profile (requires JWT).
+
+* Body: { "name": "string", "email": "string", "password": "string" } (password optional)
